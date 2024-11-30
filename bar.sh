@@ -6,6 +6,7 @@
 main() {
 	load_config
 	load_modules
+	eval "update() { printf '$format\n' $variables; }"
 	set_sleep_time $intervals
 	make_fifo "$fifo_path" || exit
 	trap exit INT HUP TERM
@@ -25,11 +26,6 @@ die() {
 
 info() {
 	printf '%s: %s\n' "${0##*/}" "$*" >&2
-}
-
-update() {
-	# This prints the output for the statusbar.
-	eval "printf '$format\n' $variables"
 }
 
 emitter() {
