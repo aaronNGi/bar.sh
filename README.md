@@ -67,7 +67,7 @@ line is read.
 To configure bar.sh, the `bar` directory should be copied from the
 install location to either `/etc` or to `$HOME/.config`
 (`$XDG_CONFIG_HOME` is also honored). There is an example config which
-has to be renamed to `bar.conf`.
+has to be renamed to `bar.rc`.
 
 The following order is used when searching for the config file and
 directory of enabled modules:
@@ -78,7 +78,7 @@ directory of enabled modules:
 3. `/etc/bar`
 4. `/usr/local/etc/bar`
 
-The module directory can also be set in `bar.conf`.
+The module directory can also be set in `bar.rc`.
 
 ### Enabling or disabling modules
 
@@ -95,7 +95,7 @@ directory. However, modules can be placed anywhere.
 ### Changing module attributes
 
 The interval and output format of every module can be changed in
-`bar.conf`. The file `bar.conf.example` has all available settings.
+`bar.rc`. The file `bar.rc.example` has all available settings.
 
 ## Creating a module
 

@@ -120,7 +120,7 @@ load_config() {
 		/etc \
 		/usr/local/etc
 	do
-		conf=$i/bar/bar.conf
+		conf=$i/bar/bar.rc
 		mod=$i/bar/mods-enabled.d
 
 		if [ -z "$conf_found" ] && [ -r "$conf" ]; then

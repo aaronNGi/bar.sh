@@ -12,7 +12,7 @@ fi
 mkdir -vp -- "$PREFIX"/bin "$PREFIX"/etc/bar
 cp -v bar.sh "$PREFIX"/bin/
 
-cp -rv bar.conf.example mods-available mods-enabled.d "$PREFIX"/etc/bar/
+cp -rv bar.rc.example mods-available mods-enabled.d "$PREFIX"/etc/bar/
 
 conf_dir=${XDG_CONFIG_HOME:-$HOME/.config}/bar
 printf '%s\n' "Installation done" \
