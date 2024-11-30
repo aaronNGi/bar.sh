@@ -6,8 +6,8 @@
 main() {
 	load_config
 	load_modules
+	eval "$(gen_emitter_func "$intervals")"
 	eval "update() { printf '$format\n' $variables; }"
-	set_sleep_time $intervals
 	make_fifo "$fifo_path" || exit
 	trap exit INT HUP TERM
 	trap 'rm -- "$fifo_path"; kill 0' EXIT
@@ -28,28 +28,32 @@ info() {
 	printf '%s: %s\n' "${0##*/}" "$*" >&2
 }
 
-emitter() {
-	every() {
-		case $(( seconds % $1 )) in 0)
-			printf '%s\n' "$2"
-		esac
-	}
+gen_emitter_func() {
+	awk -v s="$1" 'BEGIN {
+		gsub(/^ +| +$/, "", s)
+		split(s, intervals, /[ :]/)
 
-	seconds=0
-	# Split the intervals into separate arguments so we can call
-	# every() for each interval.
-	set -- $1
+		for (i=1; i<=length(intervals); i+=2) {
+			n = intervals[i]
+			f = intervals[i+1]
+			min = (min==0 || n<min) ? n : min
+			a[n] = a[n] (length(a[n]) ? " " : "") f
+		}
 
-	while :; do
-		for i do
-			# Split an interval like 4:foo into separate
-			# arguments for every().
-			every "${i%:*}" "${i#*:}"
-		done
-		echo update
-		sleep "$sleep_time"
-		seconds=$((seconds + sleep_time))
-	done
+		print "emitter() {"
+		print "\tseconds=0"
+		print "\twhile :; do"
+
+		fmt = "\t\tcase $((%s %% %d)) in 0) echo \"%s\"; esac\n"
+		for (i in a)
+			printf fmt, "seconds", i, a[i]
+
+		print "\t\techo update"
+		print "\t\tsleep " min
+		print "\t\tseconds=$((seconds + " min "))"
+		print "\tdone"
+		print "}"
+	}'
 }
 
 read_fifo() {
@@ -183,21 +187,6 @@ make_fifo() {
 	else
 		chmod 600 -- "$1"
 	fi
-}
-
-set_sleep_time() {
-	sleep_time=
-
-	for i do
-		i=${i%%:*}
-
-		if ! [ "$sleep_time" ] || [ "$i" -lt "$sleep_time" ]; then
-			sleep_time=$i
-		fi
-	done
-	unset i
-
-	sleep_time=${sleep_time:-10}
 }
 
 sysread() {
