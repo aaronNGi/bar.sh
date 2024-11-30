@@ -6,6 +6,7 @@
 main() {
 	load_config
 	load_modules
+	format=$bar_prefix${format:-bar.sh}$bar_suffix
 	eval "$(gen_emitter_func "$intervals")"
 	eval "update() { printf '$format\n' $variables; }"
 	make_fifo "$fifo_path" || exit
@@ -13,7 +14,6 @@ main() {
 	trap 'rm -- "$fifo_path"; kill 0' EXIT
 	emitter "$intervals" >"$fifo_path" &
 	child_pid=$!
-	format=$bar_prefix${format:-bar.sh}$bar_suffix
 	read_fifo <"$fifo_path"
 }
 
