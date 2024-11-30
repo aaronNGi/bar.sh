@@ -64,6 +64,9 @@ read_fifo() {
 
 run_func() {
 	case $1 in
+		exit)
+			exit
+		;;
 		update)
 			update
 		;;

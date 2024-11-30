@@ -35,11 +35,12 @@ them. For example, this can be used to refresh the bar after resume from
 sleep via acpi script or to immediately refresh a volume module via
 volume hotkeys.
 
-There are 3 special functions:
+There are 4 special functions:
 
+* `exit`: causes the script to exit
+* `reload`: reloads the script by executing itself
 * `update`: updates the bar (printing a new line to stdout)
 * `update_all`: first runs all bar modules functions and then `update`
-* `reload`: reloads the script by executing itself
 
 ## Installation
 
