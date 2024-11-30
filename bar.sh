@@ -40,6 +40,9 @@ gen_emitter_func() {
 			a[n] = a[n] (length(a[n]) ? " " : "") f
 		}
 
+		if (!min)
+			min = 10
+
 		print "emitter() {"
 		print "\tseconds=0"
 		print "\twhile :; do"
