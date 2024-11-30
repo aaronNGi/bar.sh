@@ -82,9 +82,9 @@ run_func() {
 			update
 		;;
 		reload)
-			# Kill the previous trigger_func() child
-			# process.  Otherwise we will have two, after
-			# executing ourselves.
+			# Kill the previous emitter() child process.
+			# Otherwise we will have two, after executing
+			# ourselves.
 			kill "$child_pid"
 
 			# Close old stdin (fifo) in case the fifo path
