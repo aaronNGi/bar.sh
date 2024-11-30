@@ -24,10 +24,6 @@ die() {
 	exit "$exit_code"
 }
 
-info() {
-	printf '%s: %s\n' "${0##*/}" "$*" >&2
-}
-
 gen_emitter_func() {
 	awk -v s="$1" 'BEGIN {
 		gsub(/^ +| +$/, "", s)
@@ -59,49 +55,8 @@ gen_emitter_func() {
 	}'
 }
 
-read_fifo() {
-	# Read function names from stdin. Multiple functions per line,
-	# space separated, are allowed.
-	while read -r line; do
-		for i in $line; do
-			run_func "$i"
-		done
-	done
-}
-
-run_func() {
-	case $1 in
-		exit)
-			exit
-		;;
-		update)
-			update
-		;;
-		update_all)
-			for i in $functions; do "$i"; done
-			update
-		;;
-		reload)
-			# Kill the previous emitter() child process.
-			# Otherwise we will have two, after executing
-			# ourselves.
-			kill "$child_pid"
-
-			# Close old stdin (fifo) in case the fifo path
-			# changed.
-			exec <&-
-			rm -- "$fifo_path"
-
-			exec "$0"
-		;;
-		*)
-			# Surround by spaces so we only match full
-			# words. This is to prevent being able to run
-			# foo, when there is a foobar in the functions
-			# variable.
-			case " $functions " in *" $1 "*) "$1"; esac
-		;;
-	esac
+info() {
+	printf '%s: %s\n' "${0##*/}" "$*" >&2
 }
 
 load_config() {
@@ -190,6 +145,51 @@ make_fifo() {
 	else
 		chmod 600 -- "$1"
 	fi
+}
+
+read_fifo() {
+	# Read function names from stdin. Multiple functions per line,
+	# space separated, are allowed.
+	while read -r line; do
+		for i in $line; do
+			run_func "$i"
+		done
+	done
+}
+
+run_func() {
+	case $1 in
+		exit)
+			exit
+		;;
+		update)
+			update
+		;;
+		update_all)
+			for i in $functions; do "$i"; done
+			update
+		;;
+		reload)
+			# Kill the previous emitter() child process.
+			# Otherwise we will have two, after executing
+			# ourselves.
+			kill "$child_pid"
+
+			# Close old stdin (fifo) in case the fifo path
+			# changed.
+			exec <&-
+			rm -- "$fifo_path"
+
+			exec "$0"
+		;;
+		*)
+			# Surround by spaces so we only match full
+			# words. This is to prevent being able to run
+			# foo, when there is a foobar in the functions
+			# variable.
+			case " $functions " in *" $1 "*) "$1"; esac
+		;;
+	esac
 }
 
 sysread() {
