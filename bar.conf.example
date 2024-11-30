@@ -1,0 +1,46 @@
+# This string will be shown before the bar.
+#bar_prefix=" "
+
+# This string will be shown after the bar.
+#bar_suffix=" "
+
+# String printed between modules.
+#mod_separator="  "
+
+# Directory where enabled modules are placed. Preferably by symlinking
+# files from mods-available.
+#mod_dir=${XDG_CONFIG_HOME:-$HOME/.config}/bar/mods-enabled.d
+
+# Path to the named pipe used for signaling the bar.
+#fifo_path=${TMPDIR:-/tmp}/bar-$(id -u)
+
+# Settings of the battery module.
+#battery_format=bat:%s
+#battery_update_interval=8
+
+# When the combined charge percentage of all batteries combined drops
+# below this theshold, the battery module will blink.
+#battery_warn_threshold=10
+
+# Settings of the cpu module.
+#cpu_temperature_format=cpu:%sC
+#cpu_temperature_update_interval=4
+#cpu_temperature_path=/sys/class/hwmon/hwmon0/temp1_input
+
+# Settings of the date module.
+#date_display_format="%a-%d %H:%M"
+#date_format=%s
+#date_update_interval=60
+
+# Settings of the fan module.
+#fan_format=fan:%srpm
+#fan_update_interval=4
+#fan_speed_path=/sys/devices/platform/thinkpad_hwmon/hwmon/hwmon5/fan1_input
+
+# Settings of the memory module.
+#memory_format=mem:%s%%
+#memory_update_interval=8
+
+# Settings of the wifi module.
+#wifi_format=wifi:%s%%
+#wifi_update_interval=4
