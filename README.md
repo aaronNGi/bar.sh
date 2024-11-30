@@ -153,9 +153,9 @@ Now bar.sh has to be reloaded. Given your user id is 1000:
 
 The statusbar should now show something like:
 
-     foo:one  cpu:34C  fan:0rpm  wifi:82  bat:48% 20%+  Jan-01  12:00 
+     foo:one  cpu:34C  fan:0rpm  wifi:82%  bat:48% 20%+  Jan-01  12:00 
 
-Every two seconds the value will toggle between one and two but the
+Every two seconds the value will alternate between one and two. The
 change can also be triggered by writing to the FIFO:
 
     echo onetwo update >/tmp/bar-1000
