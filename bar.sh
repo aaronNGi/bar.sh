@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# A simple statusbar script.
+# A simple script to feed statusbars.
 # Usage: bar.sh | your_statusbar
 
 main() {
