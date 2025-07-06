@@ -26,19 +26,34 @@ die() {
 
 gen_emitter_func() {
 	awk -v s="$1" 'BEGIN {
+		# Clean leading/trailing whitespace.
 		gsub(/^ +| +$/, "", s)
+
 		split(s, intervals, /[ :]/)
 
 		for (i=1; i<=length(intervals); i+=2) {
+			# Interval seconds.
 			n = intervals[i]
+
+			# Function name.
 			f = intervals[i+1]
+
+			# Shortest function interval determines sleep
+			# time.
 			min = (min==0 || n<min) ? n : min
+
+			# Group functions by interval, so we can update
+			# functions with the same interval in a single
+			# echo call.
 			a[n] = a[n] (length(a[n]) ? " " : "") f
 		}
 
+		# Default to 10 seconds sleep time, if no module has an
+		# interval (or there are no modules).
 		if (!min)
 			min = 10
 
+		# Output script for `eval`.
 		print "emitter() {"
 		print "\tseconds=0"
 		print "\twhile :; do"
