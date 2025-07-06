@@ -162,9 +162,9 @@ An example module file called `onetwo.sh`:
     	mod_format=${onetwo_format:-foo:%s}
     	mod_intervals=${onetwo_update_interval:-2}:onetwo
     	mod_functions=onetwo mod_variable=onetwovar
-    
+    	
     	onetwo() {
-	    if [ "$onetwovar" = two ]; then
+    	    if [ "$onetwovar" = two ]; then
     	        onetwovar=one
     	    else
     	        onetwovar=two
@@ -183,7 +183,7 @@ Now bar.sh has to be reloaded:
 
 It should now output something like:
 
-     foo:one  cpu:34C  fan:0rpm  wifi:82%  bat:48% 20%+  Jan-01  12:00 
+     foo:one  cpu:34C  fan:0rpm  wifi:82%  bat:48% 20%+  Jan-01  12:00
 
 Every two seconds the value will alternate between "one" and "two". The
 change can also be triggered by writing to the named pipe:
