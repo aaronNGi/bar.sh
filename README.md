@@ -38,10 +38,10 @@ via volume hotkeys.
 
 There are 4 built-in functions:
 
-* `exit`: causes the script to exit `reload`: reloads the script by
-* executing itself `update`: updates the bar (printing a new line to
-* stdout) `update_all`: first runs all bar modules functions and then
-* `update`
+* `exit`: causes the script to exit
+* `reload`: reloads the script by executing itself
+* `update`: updates the bar (printing a new line to stdout)
+* `update_all`: first runs all bar modules functions and then `update`
 
 ## Installation
 
@@ -74,8 +74,10 @@ The following order is used when searching for the directory containing
 the `bar.rc` and enabled modules directory:
 
 1. `$XDG_CONFIG_HOME/bar` or `$HOME/.config/bar` if `$XDG_CONFIG_HOME`
-is empty or unset 2. `$HOME/.local/etc/bar` 3. `/etc/bar` 4.
-`/usr/local/etc/bar`
+   is empty or unset
+2. `$HOME/.local/etc/bar`
+3. `/etc/bar`
+4. `/usr/local/etc/bar`
 
 The path to the modules enabled directory can be changed in `bar.rc`.
 
