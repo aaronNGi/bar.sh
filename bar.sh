@@ -145,10 +145,14 @@ load_modules() {
 			format=$format${format:+$mod_separator}$mod_format
 			variables="$variables \"\$$mod_variable\""
 		fi
-		[ "$mod_functions" ] &&
+
+		if [ "$mod_functions" ]; then
+			if [ "$mod_intervals" ]; then
+				intervals="$intervals $mod_intervals"
+			fi
+
 			functions="$functions $mod_functions"
-		[ "$mod_functions" ] && [ "$mod_intervals" ] &&
-			intervals="$intervals $mod_intervals"
+		fi
 	done
 
 	unset i mod_format mod_functions mod_intervals mod_variable
