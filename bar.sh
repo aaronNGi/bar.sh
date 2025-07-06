@@ -29,7 +29,7 @@ gen_emitter_func() {
 		# Clean leading/trailing whitespace.
 		gsub(/^ +| +$/, "", s)
 
-		split(s, intervals, /[ :]/)
+		split(s, intervals, /[ :]+/)
 
 		for (i=1; i<=length(intervals); i+=2) {
 			# Interval seconds.
