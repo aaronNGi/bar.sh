@@ -27,7 +27,7 @@ OSes like *BSD.
 The various bar modules update at different time intervals but can also
 be individually triggered to update via named pipe.
 
-Every bar modules defines it's own function. The function has to set a
+Every bar module defines it's own function. The function has to set a
 variable with the modules information, which is then used when the bar
 is updated by printing to stdout.
 
@@ -38,10 +38,10 @@ via volume hotkeys.
 
 There are 4 built-in functions:
 
-* `exit`: causes the script to exit
-* `reload`: reloads the script by executing itself
-* `update`: updates the bar (printing a new line to stdout)
-* `update_all`: first runs all bar modules functions and then `update`
+* `exit`: causes the script to exit `reload`: reloads the script by
+* executing itself `update`: updates the bar (printing a new line to
+* stdout) `update_all`: first runs all bar modules functions and then
+* `update`
 
 ## Installation
 
@@ -74,10 +74,8 @@ The following order is used when searching for the directory containing
 the `bar.rc` and enabled modules directory:
 
 1. `$XDG_CONFIG_HOME/bar` or `$HOME/.config/bar` if `$XDG_CONFIG_HOME`
-   is empty or unset
-2. `$HOME/.local/etc/bar`
-3. `/etc/bar`
-4. `/usr/local/etc/bar`
+is empty or unset 2. `$HOME/.local/etc/bar` 3. `/etc/bar` 4.
+`/usr/local/etc/bar`
 
 The path to the modules enabled directory can be changed in `bar.rc`.
 
@@ -110,7 +108,7 @@ A module script should have the following variables:
   Functions with an interval have to be listed in `mod_functions` too
 * `mod_functions`: space separated list of functions which should
   be callable at an interval or by writing it's name to the named pipe.
-  Module internal helper functions don't need to be added to the
+  Module internal helper functions don't have to be added to the
   variable
 * `mod_variable`: the variable name which holds the data to be
   placed into the `mod_format`'s placeholder
@@ -121,7 +119,7 @@ case, `mod_intervals` can be omitted or left empty.
 In order for users to be able to customize modules via `bar.rc`, modules
 should use parameter expansion. When setting their internal module
 variables, variables from `bar.rc` should be used as value. A default
-value can be supplied, in case the variable is not in `bar.rc`:
+value can be supplied, in case the variable isn't in `bar.rc`:
 
     mod_format=${foo_format:-foo:%s}
 
@@ -158,49 +156,55 @@ but can be changed in `bar.rc`, using the variable `foo_interval`.
 
 An example module file called `onetwo.sh`:
 
-    mod_format=${onetwo_format:-foo:%s}
-    mod_intervals=${onetwo_update_interval:-2}:onetwo
-    mod_functions=onetwo
-    mod_variable=onetwovar
+    cat <<-'EOF' >~/.config/bar/mods-available/onetwo.sh
+    	mod_format=${onetwo_format:-foo:%s}
+    	mod_intervals=${onetwo_update_interval:-2}:onetwo
+    	mod_functions=onetwo mod_variable=onetwovar
     
-    onetwo() {
-    	if [ "$onetwovar" = two ]; then
-    		onetwovar=one
-    	else
-    		onetwovar=two
-    	fi
-    }
+    	onetwo() {
+	    if [ "$onetwovar" = two ]; then
+    	        onetwovar=one
+    	    else
+    	        onetwovar=two
+    	    fi
+    	}
+    EOF
 
 To enable `onetwo.sh` and place it at the front of the bar:
 
     ln -s ../mods-available/onetwo.sh \
-    	~/.config/bar/mods-enabled/00-onetwo.sh
+        ~/.config/bar/mods-enabled/00-onetwo.sh
 
-Now bar.sh has to be reloaded. Given your user id is 1000:
+Now bar.sh has to be reloaded:
 
-    echo reload >/tmp/bar-1000
+    echo reload >/tmp/bar-$(id -u)
 
-bar.sh should now output something like:
+It should now output something like:
 
      foo:one  cpu:34C  fan:0rpm  wifi:82%  bat:48% 20%+  Jan-01  12:00 
 
-Every two seconds the value will alternate between one and two. The
+Every two seconds the value will alternate between "one" and "two". The
 change can also be triggered by writing to the named pipe:
 
-    echo onetwo update >/tmp/bar-1000
+    echo onetwo update >/tmp/bar-$(id -u)
 
 If `update` is omitted, the new value will be shown at the next cycle.
 The time between cycles is determined by the module with the shortest
 interval. So, if a function is triggered, which would otherwise only
 update every minute, and there are functions which run at an interval of
-1 second, the new value of the every minute function will be visible
+1 second, the new value of the every-minute-function will be visible
 after at most 1 second.
 
 It's also possible to update all modules at once:
 
-    echo update_all >/tmp/bar-1000
+    echo update_all >/tmp/bar-$(id -u)
+
+To change the modules interval to every second, we can simply do:
+
+    echo "onetwo_update_interval=1" >>~/.config/bar/bar.rc
+    echo reload >/tmp/bar-$(id -u)
 
 ## Known problems
 
 The time it takes a module to complete, will skew all other intervals.
-However, perfect precision is hardly needed.
+However, perfect precision isn't really needed.
