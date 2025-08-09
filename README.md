@@ -123,7 +123,7 @@ should use parameter expansion. When setting their internal module
 variables, variables from `bar.rc` should be used as value. A default
 value can be supplied, in case the variable isn't in `bar.rc`:
 
-    mod_format=${foo_format:-foo:%s}
+    mod_format=${foo_format:-foo: %s }
 
 So here we set the modules format to the config variable `foo_format`,
 with a fallback value of "foo:%s", in case `foo_format` is unset or null
@@ -158,8 +158,8 @@ but can be changed in `bar.rc`, using the variable `foo_interval`.
 
 An example module file called `onetwo.sh`:
 
-    cat <<-'EOF' >~/.config/bar/mods-available/onetwo.sh
-    	mod_format=${onetwo_format:-foo:%s}
+    cat <<-'EOF' >~/.local/etc/bar/mods-available/onetwo.sh
+    	mod_format=${onetwo_format:-foo: %s }
     	mod_intervals=${onetwo_update_interval:-2}:onetwo
     	mod_functions=onetwo mod_variable=onetwovar
     	

@@ -1,4 +1,4 @@
-mod_format=${cpu_temperature_format:-cpu:%sC}
+mod_format=${cpu_temperature_format:- cpu:%sC }
 mod_intervals=${cpu_temperature_update_interval:-4}:cputemp
 mod_functions=cputemp
 mod_variable=cputemp

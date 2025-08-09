@@ -1,4 +1,4 @@
-mod_format=${fan_format:-fan:%srpm}
+mod_format=${fan_format:- fan:%srpm }
 mod_intervals=${fan_update_interval:-4}:fanspeed
 mod_functions=fanspeed
 mod_variable=fanspeed

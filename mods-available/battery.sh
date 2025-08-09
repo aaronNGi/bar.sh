@@ -1,4 +1,4 @@
-mod_format=${battery_format:-bat:%s}
+mod_format=${battery_format:- bat:%s }
 mod_intervals="${battery_update_interval:-8}:battery 1:battery_blink"
 mod_functions="battery battery_blink"
 mod_variable=battery

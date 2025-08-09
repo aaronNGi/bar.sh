@@ -1,4 +1,4 @@
-mod_format=${wifi_format:-wifi:%s%%}
+mod_format=${wifi_format:- wifi:%s%% }
 mod_intervals=${wifi_update_format:-4}:wifi
 mod_functions=wifi
 mod_variable=wifi

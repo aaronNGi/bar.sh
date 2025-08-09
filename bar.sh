@@ -77,9 +77,8 @@ info() {
 load_config() {
 	# Default values.
 	fifo_path=${TMPDIR:-/tmp}/bar-$(id -u)
-	mod_separator="  "
-	bar_prefix=" "
-	bar_suffix=" "
+	bar_prefix=""
+	bar_suffix=""
 
 	unset conf_found mod_dir
 
@@ -147,7 +146,7 @@ load_modules() {
 		esac
 
 		if [ "$mod_format" ] && [ "$mod_variable" ]; then
-			format=$format${format:+$mod_separator}$mod_format
+			format=$format$mod_format
 			variables="$variables \"\$$mod_variable\""
 		fi
 

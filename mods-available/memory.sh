@@ -1,4 +1,4 @@
-mod_format=${memory_format:-mem:%s%%}
+mod_format=${memory_format:- mem:%s%% }
 mod_intervals=${memory_update_interval:-8}:memory
 mod_functions="memory"
 mod_variable=memory
