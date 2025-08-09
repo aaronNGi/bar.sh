@@ -109,9 +109,12 @@ load_config() {
 
 	# Source the config.
 	if [ "$conf_found" ]; then
+		info "Using config file $conf_found"
 		. "$conf_found" ||
 			die 1 "Error in config $conf_found"
 	fi
+
+	info "Using module directory $mod_dir"
 
 	unset i conf conf_found mod
 }
@@ -126,6 +129,8 @@ load_modules() {
 		fi
 
 		unset mod_format mod_functions mod_intervals mod_variable
+
+		info "Loading module ${i##*/}"
 
 		set -e
 		if ! . "$i"; then
@@ -189,6 +194,7 @@ run_func() {
 			update
 		;;
 		reload)
+			info "Reloading..."
 			# Kill the previous emitter() child process.
 			# Otherwise we will have two, after executing
 			# ourselves.
