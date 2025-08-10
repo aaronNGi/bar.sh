@@ -12,7 +12,7 @@ main() {
 	make_fifo "$fifo_path" || exit
 	trap exit INT HUP TERM
 	trap 'kill -- "$child_pid"; rm -- "$fifo_path"' EXIT
-	emitter "$intervals" >"$fifo_path" &
+	emitter >"$fifo_path" &
 	child_pid=$!
 	read_fifo <"$fifo_path"
 }
