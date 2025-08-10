@@ -4,22 +4,22 @@ A simple script to feed statusbars.
 
 ## Description
 
-bar.sh is a simple, modular and efficient POSIX shell script with
-minimal use of sub-processes.
+bar.sh is a simple, modular, and efficient POSIX shell script
+implemented with minimal use of sub-processes.
 
 ### Features
 
 * Portable
-* Minimal use of sub-processes
-* Configured via config file
-* Controlled via named pipe
+* Minimal sub-processes usage
+* Configured via a single config file
+* Controlled through a named pipe (FIFO)
 * Bar content is printed to stdout
-* Bar modules are re-ordered and enabled via filesystem (mods-enabled.d)
-* Bar modules with separate update intervals
-* Bar modules can be triggered to update via IPC (named pipe)
-* Bar modules which only show for a short period of time after being
-  triggered
-* Commands for exiting and reloading the bar script
+* Modules are enabled and ordered via a filesystem-based mechanism
+  (mods-enabled.d)
+* Individual update intervals per module
+* Modules can be triggered to update via IPC (named pipe)
+* Support for temporary/ephemeral modules (e.g., backlight/volume popup)
+* Built-in commands for exiting or reloading the script
 
 ### Preview
 
@@ -27,40 +27,42 @@ minimal use of sub-processes.
 
 ### Details
 
-In it's main loop, bar.sh only calls date(1) every minute, while all
-other bar modules use shell built-ins only (alsa\_volume uses `amixer`
-but is only called when triggered via named pipe).
+In its main loop, bar.sh only runs date(1) once per minute. All other
+modules rely on shell built-ins (except alsa\_volume, which calls amixer
+only when triggered via the pipe).
 
-It avoids external commands by using sysfs and procfs wherever possible,
-which make it more of a linux statusbar, in it's default configuration.
-However, it's rather easy to rewrite the different modules for other
-OSes like \*BSD.
+It avoids external commands by utilizing sysfs and procfs where
+possible - making it primarily suited for Linux by default. However,
+porting to other systems (e.g., \*BSD) is straightforward by modifying
+the modules.
 
-The various bar modules update at different time intervals but can also
-be individually triggered to update via named pipe.
+Modules update on different intervals and can also be triggered via the
+named pipe.
 
-Every bar module defines it's own function. The function has to set a
-variable with the modules information, which is then used when the bar
-is updated by printing to stdout.
+Each module defines its own function, which sets a variable with the
+module's output. When the bar is updated, the variable's content is used
+when printing the bar to stdout.
 
-bar.sh reads space separated function names from a named pipe and then
-runs them. For example, this can be used to refresh the bar after resume
-from sleep, via acpi script, or to immediately refresh a volume module
-via volume hotkeys.
+The script reads space-separated function names from the named pipe and
+executes them. This allows integration with external events like system
+resume or volume key presses.
 
-There are 4 built-in functions:
+### Built-in commands
 
-* `exit`: causes the script to exit
-* `reload`: reloads the script by executing itself
-* `update`: updates the bar (printing a new line to stdout)
-* `update_all`: first runs all bar modules functions and then `update`
+* `exit`: Exits the script
+* `reload`: Restarts the script
+* `update`: Updates the bar (by printing a fresh line to stdout)
+* `update_all`: Runs all module functions, then updates the bar
 
 ## Installation
 
-Just run `install.sh`.
+Run `install.sh`.
 
-It honors the `$PREFIX` variable, which will default to `/usr/local` for
-the root user or `$HOME/.local` for normal users.
+The script respects the `$PREFIX` variable:
+
+* Defaults to `/usr/local` for root
+* Defaults to `$HOME/.local` for non-root users
+
 
 ## Usage
 
@@ -68,107 +70,106 @@ the root user or `$HOME/.local` for normal users.
 
 ### Updating the DWM statusbar
 
-Instead of setting the statusbar content with `xsetroot`, which is
-pretty inefficient, because a new process has to be spawned every time
-the bar updates, it is recommended to compile a [little C
-program](https://wiki.archlinux.org/title/Dwm#Conky_statusbar) from the
-Arch Wiki. It reads from stdin and updates the DWM statusbar every time
-a line is read.
+Instead of using xsetroot (which spawns a new process for every update),
+it's recommended to compile a [small C
+utility](https://wiki.archlinux.org/title/Dwm#Conky_statusbar) from the
+Arch Wiki. It reads from `stdin` and updates the DWM status bar
+efficiently.
 
 ## Configuration
 
-To configure bar.sh, the `bar` directory should be copied from the
-install location to either `/etc` or to `$HOME/.config`
-(`$XDG_CONFIG_HOME` is honored). There is an example config which has to
-be copied to `bar.rc`.
+To configure bar.sh, copy the `bar` directory from the install location
+to either:
 
-The following order is used when searching for the directory containing
-the `bar.rc` and enabled modules directory:
+* `/etc/`
+* `$XDG_CONFIG_HOME/` (or `$HOME/.config/`)
 
-1. `$XDG_CONFIG_HOME/bar` or `$HOME/.config/bar` if `$XDG_CONFIG_HOME`
-   is empty or unset
+Copy the example config file to `bar.rc`.
+
+### Configuration search order
+
+The script looks for configuration in this order:
+
+1. `$XDG_CONFIG_HOME/bar` (or `$HOME/.config/bar`)
 2. `$HOME/.local/etc/bar`
 3. `/etc/bar`
 4. `/usr/local/etc/bar`
 
-The path to the modules enabled directory can be changed in `bar.rc`.
+The path to the enabled modules directory (`mods-enabled.d`) can be
+changed in `bar.rc`.
+
+## Managing modules
 
 ### Enabling or disabling modules
 
-Bar modules can be enabled/disabled by adding or removing symlinks from
-the directory `mods-enabled.d`. All files with an .sh ending will be
-loaded.
+Modules are enabled by copying or symlinking `.sh` files into the
+`mods-enabled.d` directory.
 
-The modules are loaded in alphabetical order, so the bar can be
-reordered by simply changing the filenames in `mods-enabled.d`.
+They are loaded in alphabetical order, so reordering is as simple as
+renaming files.
 
-bar.sh ships with a set of default modules in the `mods-available`
-directory. However, modules can be placed anywhere and then symlinked in
-`mods-enabled.d`.
+Default modules are provided in the `mods-available` directory. Custom
+modules can be placed anywhere and symlinked into `mods-enabled.d`.
 
-### Changing module attributes
+### Changing module settings
 
-The interval and output format of every module can be changed in
-`bar.rc`. The file `bar.rc.example` has all available settings.
+A module's update interval and output format can be configured in
+`bar.rc`. See `bar.rc.example` for available options.
 
-## Module spec
+## Module specification
 
-A module script should have the following variables:
+Each module script shall define the following variables:
 
-* `mod_format`: printf format string including at most one placeholder
-  like `%s`, `%02d` etc.
-* `mod_intervals`: space separated list of interval:function
+* `mod_format`: A printf format string including at most one placeholder
+  like `%s`, `%02d`, etc.
+* `mod_intervals`: A space separated list of `interval:function`
   pairs, determining at which interval which function should be called.
   Functions with an interval have to be listed in `mod_functions` too
-* `mod_functions`: space separated list of functions which should
-  be callable at an interval or by writing it's name to the named pipe.
-  Module internal helper functions don't have to be added to the
-  variable
-* `mod_variable`: the variable name which holds the data to be
-  placed into the `mod_format`'s placeholder
+* `mod_functions`: A space separated list of functions which can
+  be triggered periodically or manually, by writing its name to the
+  named pipe. Module internal helper functions don't have to be added to
+  the variable
+* `mod_variable`: The name of the variable containing the module's output
+  to be placed into the `mod_format`'s placeholder
 
-It's possible to create modules which don't update periodically. In that
-case, `mod_intervals` can be omitted or left empty.
+Notes:
 
-In order for users to be able to customize modules via `bar.rc`, modules
-should use parameter expansion. When setting their internal module
-variables, variables from `bar.rc` should be used as value. A default
-value can be supplied, in case the variable isn't in `bar.rc`:
+* Modules can omit `mod_intervals` if they don't need periodic updates
+* For user configurability, parameter expansion shall be used when
+  setting module variables. Example:
 
     mod_format=${foo_format:- foo:%s }
 
-So here we set the modules format to the config variable `foo_format`,
-with a fallback value of " foo:%s ", in case `foo_format` is unset or
-null (empty).
+This uses the value of `$foo_format` from `bar.rc`, or defaults to `"
+foo:%s "` if unset.
 
-A module needs to store the modules output in a variable and then supply
-the name of that variable in `mod_variable`:
+Each module shall store its output in a variable and declare the name of
+that variable using `mod_variable`:
 
     mod_variable=foo_var
 
-To be able to update the value in the bar output (via named pipe or
-automatically at a certain interval), it has to have an update function.
-The update function needs to be listed within the space-separated
-variable `mod_functions`:
+To update this value - either periodically or via the named pipe - an
+update function shall be defined. The name of this function needs to be
+listed in the space-separated `mod_functions` variable:
 
     mod_functions=foo_func
 
-The function `foo_func()` should set the value of the variable
+The function `foo_func` is responsible for updating the value of
 `foo_var`.
 
-If a module should update periodically, it needs to set an
-interval:function pair, within the space-separated variable
-`mod_intervals`. Just like `mod_format`, modules should use parameter
-expansion for the interval, to make it configurable in `bar.rc`:
+If the module should update automatically at a regular interval, an
+`interval:function` pair in `mod_intervals` needs to be defined. Like
+other settings, the interval shall use parameter expansion to make it
+configurable via `bar.rc`:
 
     mod_intervals="${foo_interval:-2}:foo_func"
 
-So by default, this results in `foo_func()` to be run every 2 seconds,
-but can be changed in `bar.rc`, using the variable `foo_interval`.
+In this example, `foo_func()` runs every 2 seconds by default. This
+interval can be customized by setting `foo_interval` in `bar.rc`.
 
 ## Module tutorial
 
-An example module file called `onetwo.sh`:
+Here's a simple module: `onetwo.sh`:
 
     cat <<-'EOF' >~/.local/etc/bar/mods-available/onetwo.sh
     	mod_format=${onetwo_format:- foo:%s }
@@ -185,41 +186,47 @@ An example module file called `onetwo.sh`:
     	}
     EOF
 
-To enable `onetwo.sh` and place it at the front of the bar:
+Enable and position the module at the start of the bar:
 
     ln -s ../mods-available/onetwo.sh \
         ~/.config/bar/mods-enabled/00-onetwo.sh
 
-Now bar.sh has to be reloaded:
+Reload `bar.sh`:
 
     echo reload >/tmp/bar-$(id -u)
 
-It should now output something like:
+Now the output should look like:
 
     foo:one  cpu:34C  fan:0rpm  wifi:82%  bat:48% 20%+  Jan-01  12:00
 
-Every two seconds the value will alternate between "one" and "two". The
-change can also be triggered by writing to the named pipe:
+Every two seconds, it will alternate between "one" and "two".
+
+To manually trigger an update:
 
     echo onetwo update >/tmp/bar-$(id -u)
 
-If `update` is omitted, the new value will be shown at the next cycle.
-The time between cycles is determined by the module with the shortest
-interval. So, if a function is triggered, which would otherwise only
-update every minute, and there are functions which run at an interval of
-1 second, the new value of the every-minute-function will be visible
-after at most 1 second.
+If `update` is omitted, the new value will be displayed in the next cycle.
 
-It's also possible to update all modules at once:
+### Timing notes
+
+The update cycle is paced by the module with the shortest interval. This
+means that if a function - normally scheduled to run once per minute -
+is manually triggered **without** issuing `update`, its output will
+appear on the bar within the next cycle, which could be as soon as one
+second later, assuming another module updates every second.
+
+To update all modules immediately:
 
     echo update_all >/tmp/bar-$(id -u)
 
-To change the modules interval to every second, we can simply do:
+To change the module's interval to every second:
 
     echo "onetwo_update_interval=1" >>~/.config/bar/bar.rc
     echo reload >/tmp/bar-$(id -u)
 
 ## Known problems
 
-The time it takes a module to complete, will skew all other intervals.
-However, perfect precision isn't really needed.
+Long-running modules can delay the entire update loop. For example, if a
+module (or a set of modules) takes two seconds to complete, even those
+scheduled to run every second will be blocked until the slow modules
+finish.
