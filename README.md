@@ -10,12 +10,12 @@ implemented with minimal use of sub-processes.
 ### Features
 
 * Portable
-* Minimal sub-processes usage
+* Minimal sub-process usage
 * Configured via a single config file
 * Controlled through a named pipe (FIFO)
 * Bar content is printed to stdout
 * Modules are enabled and ordered via a filesystem-based mechanism
-  (mods-enabled.d)
+  (`mods-enabled.d`)
 * Individual update intervals per module
 * Modules can be triggered to update via IPC (named pipe)
 * Support for temporary/ephemeral modules (e.g., backlight/volume popup)
@@ -28,8 +28,8 @@ implemented with minimal use of sub-processes.
 ### Details
 
 In its main loop, bar.sh only runs date(1) once per minute. All other
-modules rely on shell built-ins (except alsa\_volume, which calls amixer
-only when triggered via the pipe).
+modules rely on shell built-ins (except alsa\_volume, which calls
+`amixer` only when triggered via named pipe).
 
 It avoids external commands by utilizing sysfs and procfs where
 possible - making it primarily suited for Linux by default. However,
@@ -73,7 +73,7 @@ The script respects the `$PREFIX` variable:
 Instead of using xsetroot (which spawns a new process for every update),
 it's recommended to compile a [small C
 utility](https://wiki.archlinux.org/title/Dwm#Conky_statusbar) from the
-Arch Wiki. It reads from `stdin` and updates the DWM status bar
+Arch Wiki. It reads from `stdin` and updates the DWM statusbar
 efficiently.
 
 ## Configuration
@@ -136,7 +136,9 @@ Notes:
 
 * Modules can omit `mod_intervals` if they don't need periodic updates
 * For user configurability, parameter expansion shall be used when
-  setting module variables. Example:
+  setting module variables
+
+Example:
 
     mod_format=${foo_format:- foo:%s }
 
@@ -149,7 +151,7 @@ that variable using `mod_variable`:
     mod_variable=foo_var
 
 To update this value - either periodically or via the named pipe - an
-update function shall be defined. The name of this function needs to be
+update function shall be defined. The name of this function shall be
 listed in the space-separated `mod_functions` variable:
 
     mod_functions=foo_func
@@ -164,12 +166,12 @@ configurable via `bar.rc`:
 
     mod_intervals="${foo_interval:-2}:foo_func"
 
-In this example, `foo_func()` runs every 2 seconds by default. This
+In this example, `foo_func()` runs every two seconds by default. This
 interval can be customized by setting `foo_interval` in `bar.rc`.
 
 ## Module tutorial
 
-Here's a simple module: `onetwo.sh`:
+Here's a simple module:
 
     cat <<-'EOF' >~/.local/etc/bar/mods-available/onetwo.sh
     	mod_format=${onetwo_format:- foo:%s }
