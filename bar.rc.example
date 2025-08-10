@@ -11,6 +11,12 @@
 # Path to the named pipe used for signaling the bar.
 #fifo_path=${TMPDIR:-/tmp}/bar-$(id -u)
 
+# Settings of the backlight module.
+#backlight_format=%s
+#backlight_update_interval=1
+#backlight_prefix="backlight:"
+#backlight_suffix=" "
+
 # Settings of the battery module.
 #battery_format=" bat:%s "
 #battery_update_interval=8
@@ -37,6 +43,12 @@
 # Settings of the memory module.
 #memory_format=" mem:%s%% "
 #memory_update_interval=8
+
+# Settings of the alsa_volume module.
+#volume_format=%s
+#volume_update_interval=1
+#volume_prefix="volume:"
+#volume_suffix=" "
 
 # Settings of the wifi module.
 #wifi_format=" wifi:%s%% "

@@ -5,6 +5,8 @@ mod_variable=volume
 
 _vol_time=0
 _vol_interval=${mod_intervals%:*}
+_vol_pre=${volume_prefix:-vol:}
+_vol_suffix=${volume_suffix:- }
 
 volume() {
 	if [ "$_vol_time" -le 0 ]; then
@@ -17,9 +19,9 @@ volume() {
 
 volume_trigger() {
 	_vol_time=$_vol_interval
-	volume="Volume:$(amixer sget Master | awk -F'[][]' '
+	volume="$_vol_pre$(amixer sget Master | awk -F'[][]' '
 		/%/ {
 			print $(NF-1) == "off" ? "MM" : $2
 		}'
-	) "
+	)$_vol_suffix"
 }
