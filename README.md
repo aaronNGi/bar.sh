@@ -5,24 +5,36 @@ A simple script to feed statusbars.
 ## Description
 
 bar.sh is a simple, modular and efficient POSIX shell script with
-minimal use of sub-processes. It is controlled via named pipe instead of
-signals and simply prints the bar content to stdout. The individual bar
-modules can run at different update intervals or be updated
-asynchronously via named pipe.
+minimal use of sub-processes.
 
-## Preview
+### Features
+
+* Portable
+* Minimal use of sub-processes
+* Configured via config file
+* Controlled via named pipe
+* Bar content is printed to stdout
+* Bar modules are re-ordered and enabled via filesystem (mods-enabled.d)
+* Bar modules with separate update intervals
+* Bar modules can be triggered to update via IPC (named pipe)
+* Bar modules which only show for a short period of time after being
+  triggered
+* Commands for exiting and reloading the bar script
+
+### Preview
 
     cpu:34C  fan:0rpm  mem:20%  wifi:82%  bat:48% 20%+  Jan-01  12:00
 
-## Details
+### Details
 
 In it's main loop, bar.sh only calls date(1) every minute, while all
-other bar modules use shell built-ins only.
+other bar modules use shell built-ins only (alsa\_volume uses `amixer`
+but is only called when triggered via named pipe).
 
 It avoids external commands by using sysfs and procfs wherever possible,
 which make it more of a linux statusbar, in it's default configuration.
 However, it's rather easy to rewrite the different modules for other
-OSes like *BSD.
+OSes like \*BSD.
 
 The various bar modules update at different time intervals but can also
 be individually triggered to update via named pipe.
